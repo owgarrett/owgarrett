@@ -1,4 +1,4 @@
-### Hi there 👋
+### What Up 👋
 
 <!--
 **owgarrett/owgarrett** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
