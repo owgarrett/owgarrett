@@ -14,3 +14,8 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
+
+## Codex Project Prompt
+
+A ready-to-use master prompt for generating the MATLAB acquisition + analysis platform lives in `codex_project_prompt.md`.
+
