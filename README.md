@@ -1,16 +1,19 @@
 ### What Up 👋
 
-<!--
-**owgarrett/owgarrett** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+This repo now includes a runnable MATLAB project for your NI-DAQ sensor workflow at:
 
-Here are some ideas to get you started:
+- `sensor_test_system/`
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+Start in MATLAB with:
+
+```matlab
+cd('sensor_test_system')
+addpath(genpath(pwd))
+sensor_test_gui
+```
+
+For a no-hardware dry run:
+
+```matlab
+run('examples/demo_end_to_end.m')
+```
