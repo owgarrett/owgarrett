@@ -1,5 +1,10 @@
 function sensor_test_gui()
 %SENSOR_TEST_GUI Minimal GUI for running acquisition workflows.
+% Add project subfolders so this GUI can be launched from any working folder.
+gui_dir = fileparts(mfilename('fullpath'));
+project_root = fileparts(gui_dir);
+addpath(genpath(project_root));
+
 cfg = default_config();
 
 fig = uifigure('Name','Sensor Test System','Position',[100 100 900 600]);
