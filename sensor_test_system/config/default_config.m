@@ -30,5 +30,9 @@ cfg.segment.min_clean_duration_s = 0.2;
 cfg.segment.derivative_sigma = 5;
 cfg.segment.envelope_floor = 0.15;
 
+
+cfg.vv.min_snr_db = 10;
+cfg.vv.min_clean_fraction = 0.70;
+
 cfg.prompt_user = true;
 end

@@ -50,6 +50,21 @@ uibutton(fig,'Text','Run Deep Dive','Position',[490 490 120 28], 'ButtonPushedFc
             status.Value = [status.Value; "Completed " + mode + " -> " + string(out.summary_csv)];
 
             S = readtable(out.summary_csv);
+            last = S(end,:);
+            pass_txt = "FAIL";
+            if logical(last.trial_pass)
+                pass_txt = "PASS";
+            end
+            status.Value = [status.Value; ...
+                "Trial verdict: " + pass_txt + ...
+                " | SNR(dB)=" + string(round(last.snr_db,2)) + ...
+                " | Gain=" + string(round(last.gain,4)) + ...
+                " | Phase(deg)=" + string(round(last.phase_deg,2)) + ...
+                " | MinDetect(um)=" + string(round(last.min_detect_disp_um_3sigma,4))];
+            if isfield(out, 'verification_report')
+                status.Value = [status.Value; "Verification report: " + string(out.verification_report)];
+            end
+
             raw_file = char(S.raw_file(end));
             raw_path = fullfile(out.raw_dir, raw_file);
             d = load_raw_data(raw_path);
