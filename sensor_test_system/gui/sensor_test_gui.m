@@ -48,6 +48,7 @@ uibutton(fig,'Text','Run Deep Dive','Position',[490 490 120 28], 'ButtonPushedFc
 
             out = run_experiment(local_cfg, mode);
             status.Value = [status.Value; "Completed " + mode + " -> " + string(out.summary_csv)];
+            status.Value = [status.Value; "Output folder: " + string(out.proc_dir)];
 
             S = readtable(out.summary_csv);
             last = S(end,:);
@@ -63,6 +64,9 @@ uibutton(fig,'Text','Run Deep Dive','Position',[490 490 120 28], 'ButtonPushedFc
                 " | MinDetect(um)=" + string(round(last.min_detect_disp_um_3sigma,4))];
             if isfield(out, 'verification_report')
                 status.Value = [status.Value; "Verification report: " + string(out.verification_report)];
+            end
+            if isfield(out, 'verification_plot')
+                status.Value = [status.Value; "Verification plot: " + string(out.verification_plot)];
             end
 
             raw_file = char(S.raw_file(end));

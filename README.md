@@ -19,4 +19,4 @@ run('examples/demo_end_to_end.m')
 ```
 
 
-Quantitative outputs are written per session under `sensor_test_system/data/processed/...`, including `summary.csv` and `verification_report.csv`.
+Quantitative outputs are written per session under `sensor_test_system/data/processed/...`, including `summary.csv`, `verification_report.csv`, and auto-generated verification plots.

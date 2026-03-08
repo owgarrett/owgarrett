@@ -1,6 +1,6 @@
 # Sensor Test System (MATLAB)
 
-This folder contains a runnable MATLAB framework for NI DAQ acquisition, signal analysis, and quantitative verification outputs.
+This project provides NI DAQ acquisition + automated verification outputs focused on plots and concise CSV tables.
 
 ## Quick start
 1. Open MATLAB.
@@ -11,41 +11,32 @@ This folder contains a runnable MATLAB framework for NI DAQ acquisition, signal 
    sensor_test_gui
    ```
 
-## No-hardware test
-Run the synthetic end-to-end demo:
-```matlab
-run('examples/demo_end_to_end.m')
-```
-
-## Core entry points
-- GUI: `gui/sensor_test_gui.m`
-- Acquisition orchestration: `acquisition/run_experiment.m`
-- Config defaults: `config/default_config.m`
-
-## Quantitative outputs (auto-generated)
-For each session, outputs are written to:
+## What gets auto-generated after each run
+Session outputs are written to:
 - `data/raw/<sensor_id>/<date>/<session_id>/`
 - `data/processed/<sensor_id>/<date>/<session_id>/`
-- `data/sessions/<sensor_id>/<date>/<session_id>/`
 
-Key files:
-- Raw trial data: `*.csv`
-- Per-trial metadata + metrics: `*.json`
-- Per-trial quantitative summary: `summary.csv`
-- Aggregated validation report: `verification_report.csv`
-- Session manifest: `session_manifest.json`
+### Raw data
+- `*.csv` files with `time_s`, `accel_v`, `sensor_v`.
 
-`summary.csv` includes metrics such as:
-- clean fraction after blip detection
+### Processed + verification outputs
+- `summary.csv` (per-trial metrics)
+- `verification_report.csv` (aggregate by frequency)
+- `verification_summary.png` (gain/phase/SNR/min-detect plots)
+- `<trial>_overlay.png` (sensor+accelerometer normalized overlay, filtered and clean-only)
+- `<trial>_fft.png` (FFT raw vs clean+filtered)
+- `<trial>_trial_results.csv` (single-trial concise results table)
+
+## Key metrics
+- clean fraction after blip removal
 - SNR at drive tone
-- gain and phase
+- gain and phase (from clean filtered sinusoidal segments)
 - 60 Hz noise ratio
 - displacement amplitude estimate
-- sensitivity estimate (`ohm/um`)
-- minimum detectable displacement estimate (`3-sigma`, um)
-- per-trial PASS/FAIL flag
+- sensitivity (`ohm/um`)
+- minimum detectable displacement estimate (`3-sigma`, `um`)
+- per-trial PASS/FAIL
 
 ## Notes
-- Uses MATLAB Data Acquisition Toolbox (`daq("ni")`).
-- Update `default_config.m` with your hardware channel names and calibration constants.
-- PASS/FAIL thresholds are configured in `cfg.vv.*` in `default_config.m`.
+- JSON output files were intentionally removed from acquisition outputs.
+- PASS/FAIL thresholds are configured in `config/default_config.m` (`cfg.vv.*`).

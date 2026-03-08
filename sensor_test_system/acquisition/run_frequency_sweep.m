@@ -10,11 +10,8 @@ out = run_loop(dq, cfg, freqs_hz, amps, reps, paths, "frequency_sweep");
 end
 
 function out = run_loop(dq, cfg, freqs_hz, amps, reps, paths, test_type)
-io = io_helpers();
 th = table_helpers();
 summary_path = fullfile(paths.proc_dir, 'summary.csv');
-manifest = struct('sensor_id', cfg.sensor_id, 'session_id', paths.session_id, ...
-    'test_type', test_type, 'measurements', []);
 
 for i = 1:numel(freqs_hz)
     for r = 1:reps(i)
@@ -28,12 +25,6 @@ for i = 1:numel(freqs_hz)
         T = table(trial.t_s, trial.accel_v, trial.sensor_v, 'VariableNames', {'time_s','accel_v','sensor_v'});
         writetable(T, raw_path);
 
-        meta = trial;
-        meta.csv_file = raw_name;
-        meta.metrics = metrics;
-        json_name = replace(raw_name, '.csv', '.json');
-        io.write_json(fullfile(paths.raw_dir, json_name), meta);
-
         row = table(string(trial.timestamp), string(test_type), trial.f0_hz, trial.amp, r, ...
             trial.num_samples, trial.dt_mean, trial.dt_std, trial.dropout_flag, ...
             metrics.seg.clean_fraction, metrics.snr_db, metrics.gp.gain, metrics.gp.phase_deg, ...
@@ -44,39 +35,41 @@ for i = 1:numel(freqs_hz)
             'min_detect_disp_um_3sigma','trial_pass','raw_file'});
         th.append_or_create_table(summary_path, row);
 
-        manifest.measurements = [manifest.measurements; struct( ...
-            'freq_hz',trial.f0_hz,'amp',trial.amp,'rep',r,'raw_file',raw_name, ...
-            'snr_db',metrics.snr_db,'gain',metrics.gp.gain,'phase_deg',metrics.gp.phase_deg, ...
-            'min_detect_disp_um_3sigma',metrics.min_detect_disp_um_3sigma,'trial_pass',metrics.trial_pass)]; %#ok<AGROW>
+        % Auto-generate immediate trial artifacts.
+        generate_trial_outputs(raw_name, trial.f0_hz, metrics, cfg.fs_hz, paths.proc_dir);
     end
 end
-io.write_json(fullfile(paths.session_dir, 'session_manifest.json'), manifest);
-verification_report = write_verification_report(summary_path, paths.proc_dir);
+report = write_verification_report(summary_path, paths.proc_dir);
 out = struct('summary_csv', summary_path, 'raw_dir', paths.raw_dir, ...
-    'manifest', fullfile(paths.session_dir, 'session_manifest.json'), ...
-    'verification_report', verification_report);
+    'proc_dir', paths.proc_dir, 'verification_report', report.csv_path, ...
+    'verification_plot', report.plot_path);
 end
 
-function report_path = write_verification_report(summary_path, proc_dir)
+function report = write_verification_report(summary_path, proc_dir)
 S = readtable(summary_path);
 uf = unique(S.freq_hz);
 R = table();
 for i = 1:numel(uf)
     idx = S.freq_hz == uf(i);
-    freq = uf(i);
-    gain_mean = mean(S.gain(idx), 'omitnan');
-    phase_mean = mean(S.phase_deg(idx), 'omitnan');
-    phase_std = std(S.phase_deg(idx), 'omitnan');
-    snr_mean = mean(S.snr_db(idx), 'omitnan');
-    min_detect_mean = mean(S.min_detect_disp_um_3sigma(idx), 'omitnan');
-    pass_rate = mean(S.trial_pass(idx));
-
-    row = table(freq, gain_mean, phase_mean, phase_std, snr_mean, min_detect_mean, pass_rate, ...
+    row = table(uf(i), mean(S.gain(idx), 'omitnan'), mean(S.phase_deg(idx), 'omitnan'), ...
+        std(S.phase_deg(idx), 'omitnan'), mean(S.snr_db(idx), 'omitnan'), ...
+        mean(S.min_detect_disp_um_3sigma(idx), 'omitnan'), mean(S.trial_pass(idx)), ...
         'VariableNames', {'freq_hz','gain_mean','phase_mean_deg','phase_std_deg','snr_mean_db', ...
         'min_detect_disp_um_mean','trial_pass_rate'});
     R = [R; row]; %#ok<AGROW>
 end
 
-report_path = fullfile(proc_dir, 'verification_report.csv');
-writetable(R, report_path);
+csv_path = fullfile(proc_dir, 'verification_report.csv');
+writetable(R, csv_path);
+
+fig = figure('Name', 'Verification Summary', 'Color', 'w');
+tiledlayout(2,2);
+nexttile; plot(R.freq_hz, R.gain_mean, '-o'); grid on; title('Gain vs Frequency'); xlabel('Hz'); ylabel('Gain');
+nexttile; errorbar(R.freq_hz, R.phase_mean_deg, R.phase_std_deg, '-o'); grid on; title('Phase vs Frequency'); xlabel('Hz'); ylabel('deg');
+nexttile; plot(R.freq_hz, R.snr_mean_db, '-o'); grid on; title('Mean SNR vs Frequency'); xlabel('Hz'); ylabel('dB');
+nexttile; plot(R.freq_hz, R.min_detect_disp_um_mean, '-o'); grid on; title('Min Detectable Disp vs Frequency'); xlabel('Hz'); ylabel('um');
+plot_path = fullfile(proc_dir, 'verification_summary.png');
+saveas(fig, plot_path);
+
+report = struct('csv_path', csv_path, 'plot_path', plot_path);
 end
