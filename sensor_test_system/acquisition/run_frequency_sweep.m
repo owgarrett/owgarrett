@@ -58,18 +58,27 @@ for i = 1:numel(uf)
         'min_detect_disp_um_mean','trial_pass_rate'});
     R = [R; row]; %#ok<AGROW>
 end
-
 csv_path = fullfile(proc_dir, 'verification_report.csv');
 writetable(R, csv_path);
 
 fig = figure('Name', 'Verification Summary', 'Color', 'w');
-tiledlayout(2,2);
-nexttile; plot(R.freq_hz, R.gain_mean, '-o'); grid on; title('Gain vs Frequency'); xlabel('Hz'); ylabel('Gain');
-nexttile; errorbar(R.freq_hz, R.phase_mean_deg, R.phase_std_deg, '-o'); grid on; title('Phase vs Frequency'); xlabel('Hz'); ylabel('deg');
-nexttile; plot(R.freq_hz, R.snr_mean_db, '-o'); grid on; title('Mean SNR vs Frequency'); xlabel('Hz'); ylabel('dB');
-nexttile; plot(R.freq_hz, R.min_detect_disp_um_mean, '-o'); grid on; title('Min Detectable Disp vs Frequency'); xlabel('Hz'); ylabel('um');
+tiledlayout(2,2, 'TileSpacing', 'compact');
+
+if height(R) == 1
+    xcat = categorical("Run");
+
+    nexttile; bar(xcat, R.gain_mean); grid on; title('Gain'); ylabel('Gain');
+    nexttile; bar(xcat, R.phase_mean_deg); hold on; errorbar(1, R.phase_mean_deg, R.phase_std_deg, 'k.', 'LineWidth', 1.2); grid on; title('Phase'); ylabel('deg');
+    nexttile; bar(xcat, R.snr_mean_db); grid on; title('Mean SNR'); ylabel('dB');
+    nexttile; bar(xcat, R.min_detect_disp_um_mean); grid on; title('Min Detectable Disp'); ylabel('um');
+else
+    nexttile; plot(R.freq_hz, R.gain_mean, '-o', 'LineWidth', 1.4); grid on; title('Gain vs Frequency'); xlabel('Hz'); ylabel('Gain');
+    nexttile; errorbar(R.freq_hz, R.phase_mean_deg, R.phase_std_deg, '-o', 'LineWidth', 1.2); grid on; title('Phase vs Frequency'); xlabel('Hz'); ylabel('deg');
+    nexttile; plot(R.freq_hz, R.snr_mean_db, '-o', 'LineWidth', 1.4); grid on; title('Mean SNR vs Frequency'); xlabel('Hz'); ylabel('dB');
+    nexttile; plot(R.freq_hz, R.min_detect_disp_um_mean, '-o', 'LineWidth', 1.4); grid on; title('Min Detectable Disp vs Frequency'); xlabel('Hz'); ylabel('um');
+end
+
 plot_path = fullfile(proc_dir, 'verification_summary.png');
 saveas(fig, plot_path);
-
 report = struct('csv_path', csv_path, 'plot_path', plot_path);
 end

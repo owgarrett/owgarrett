@@ -73,15 +73,40 @@ uibutton(fig,'Text','Run Deep Dive','Position',[490 490 120 28], 'ButtonPushedFc
             raw_path = fullfile(out.raw_dir, raw_file);
             d = load_raw_data(raw_path);
 
-            plot(ax1, d.t_s, d.accel_v); hold(ax1,'on'); plot(ax1, d.t_s, d.sensor_v); hold(ax1,'off'); grid(ax1,'on');
-            legend(ax1, {'Accel','Sensor'});
+            f0 = last.freq_hz;
+            lo = max(1, f0 - local_cfg.bandpass_half_width_hz);
+            hi = f0 + local_cfg.bandpass_half_width_hz;
+            a_f = bandpass(d.accel_v, [lo hi], local_cfg.fs_hz);
+            s_f = bandpass(d.sensor_v, [lo hi], local_cfg.fs_hz);
 
-            fa = compute_fft(d.accel_v, local_cfg.fs_hz);
-            fs = compute_fft(d.sensor_v, local_cfg.fs_hz);
-            plot(ax2, fa.f_hz, fa.mag); hold(ax2,'on'); plot(ax2, fs.f_hz, fs.mag); hold(ax2,'off'); grid(ax2,'on');
-            legend(ax2, {'Accel','Sensor'});
+            t = d.t_s(:);
+            t_end = t(1) + 2/max(f0,1);
+            idx = t <= t_end;
+            if nnz(idx) < 10
+                idx = true(size(t));
+            end
+
+            a_n = norm01(a_f(idx));
+            s_n = norm01(s_f(idx));
+            plot(ax1, t(idx), a_n, 'LineWidth', 1.4); hold(ax1,'on');
+            plot(ax1, t(idx), s_n, 'LineWidth', 1.2); hold(ax1,'off');
+            ylim(ax1, [0 1]); grid(ax1,'on');
+            title(ax1, sprintf('Time Preview (~2 cycles @ %.1f Hz, normalized)', f0));
+            legend(ax1, {'Accel filt','Sensor filt'}, 'Location', 'best');
+
+            fa = compute_fft(s_f, local_cfg.fs_hz);
+            plot(ax2, fa.f_hz, fa.mag, 'r', 'LineWidth', 1.2); hold(ax2,'on');
+            xline(ax2, f0, 'k--', 'f0'); hold(ax2,'off');
+            xlim(ax2, [0 max(2*f0, 2000)]); grid(ax2,'on');
+            title(ax2, 'Sensor FFT (filtered)');
+            legend(ax2, {'Sensor FFT','f0'}, 'Location', 'best');
         catch ME
             status.Value = [status.Value; "ERROR: " + string(ME.message)];
         end
     end
+end
+
+function y = norm01(x)
+x = x(:);
+y = (x - min(x)) / max(max(x)-min(x), eps);
 end

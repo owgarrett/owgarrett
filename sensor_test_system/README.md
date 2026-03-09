@@ -22,8 +22,8 @@ Session outputs are written to:
 ### Processed + verification outputs
 - `summary.csv` (per-trial metrics)
 - `verification_report.csv` (aggregate by frequency)
-- `verification_summary.png` (gain/phase/SNR/min-detect plots)
-- `<trial>_overlay.png` (sensor+accelerometer normalized overlay, filtered and clean-only)
+- `verification_summary.png` (clean, presentation-ready gain/phase/SNR/min-detect summary plots)
+- `<trial>_overlay.png` (sensor+accelerometer normalized overlay, zoomed to ~2 cycles, filtered and clean-only)
 - `<trial>_fft.png` (FFT raw vs clean+filtered)
 - `<trial>_trial_results.csv` (single-trial concise results table)
 
