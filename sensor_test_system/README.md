@@ -40,3 +40,6 @@ Session outputs are written to:
 ## Notes
 - JSON output files were intentionally removed from acquisition outputs.
 - PASS/FAIL thresholds are configured in `config/default_config.m` (`cfg.vv.*`).
+
+
+- Amp list values are interpreted as direct function-generator Vpp setpoints (e.g., `[1 2 4 8 12 16 20]`).

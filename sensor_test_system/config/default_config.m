@@ -17,8 +17,10 @@ cfg.session_id = "";
 cfg.auto_session_id = true;
 
 cfg.freqs_hz = [100 200 500 800 1000 1100 1200];
-cfg.amps = [0.2 0.5 1.0];
+cfg.amps_vpp = [1 2 4 8 12 16 20];
+cfg.amps = cfg.amps_vpp;
 cfg.deep_dive_reps = 5;
+cfg.max_function_generator_vpp = 20;
 
 cfg.vin_v = 5.0;
 cfg.r_ref_ohm = 50000;

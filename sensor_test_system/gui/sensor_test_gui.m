@@ -22,7 +22,7 @@ edur = uieditfield(fig,'numeric','Value',cfg.duration_s,'Position',[750 560 90 2
 
 uilabel(fig,'Text','Freq list [Hz]','Position',[20 525 100 22]);
 ef = uieditfield(fig,'text','Value',mat2str(cfg.freqs_hz),'Position',[120 525 280 22]);
-uilabel(fig,'Text','Amp list','Position',[420 525 80 22]);
+uilabel(fig,'Text','Amp list [Vpp]','Position',[420 525 80 22]);
 ea = uieditfield(fig,'text','Value',mat2str(cfg.amps),'Position',[500 525 180 22]);
 
 status = uitextarea(fig,'Position',[20 20 860 130],'Editable','off');

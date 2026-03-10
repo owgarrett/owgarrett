@@ -2,7 +2,7 @@ function trial = acquire_trial(dq, cfg, f0_hz, amp, rep_idx)
 %ACQUIRE_TRIAL Perform one foreground acquisition with metadata.
 
 if cfg.prompt_user
-    fprintf('\nSet shaker: f0=%.2f Hz, amplitude=%.4g, rep=%d\n', f0_hz, amp, rep_idx);
+    fprintf('\nSet shaker: f0=%.2f Hz, function generator=%.4g Vpp, rep=%d\n', f0_hz, amp, rep_idx);
     input('Press ENTER when ready: ', 's');
 end
 pause(cfg.settle_s);
