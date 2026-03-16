@@ -43,3 +43,23 @@ Session outputs are written to:
 
 
 - Amp list values are interpreted as direct function-generator Vpp setpoints (e.g., `[1 2 4 8 12 16 20]`).
+
+
+## Presentation figure export (Tasks 1-4)
+Generate faculty-ready charts from an existing processed session:
+```matlab
+generate_faculty_report_figures
+```
+Or point to a specific processed session folder:
+```matlab
+generate_faculty_report_figures('data/processed/<sensor>/<date>/<session>')
+```
+This writes task-focused PNG charts and a quick metrics CSV into `presentation_figures/` under that session.
+
+
+## Standalone reporting script (no ecosystem dependencies)
+Use this if you only want to regenerate presentation figures from existing session files without calling project helper functions:
+```matlab
+run('examples/generate_faculty_report_standalone.m')
+```
+Edit the USER SETTINGS block at the top of the script to choose latest session(s) or explicit session folders.
